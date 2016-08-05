@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  style.
+    .thumbnails {width: 100%;}
+    .thumbnail {
+    max-width: 33.2%; }
+    .thumbnail img {
+    display: block;
+    max-width: 100.4%;
+    height: auto;}
+  script(src='https://npmcdn.com/masonry-layout@4.1/dist/masonry.pkgd.min.js')
+  script(src='https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.min.js')
+  h1 Pick the right images: #{query}
+  h2 Item ID: #{itemid}
+  script.
+    $(function () {
+    $("select").imagepicker(
+    { show_label  : false}
+    );
+    var $grid =  $('.thumbnails').masonry({
+    // options
+    itemSelector: '.thumbnail',
+    columnWidth: 250
+    });
+    $grid.imagesLoaded().progress( function() {
+    $grid.masonry('layout');
+    });
+     $("#upload-images").submit(function(event) {
+      /* stop form from submitting normally */
+      event.preventDefault();
+      /* get the action attribute from the <form action=""> element */
+      var $form = $( this ),
+          url = $form.attr( 'action' );
+      /* Send the data using post with element id name and name2*/
+      var posting = $.get( url, $('#upload-images').serialize() );
+      window.location.href = '/next' + '?' + $('#upload-images').serialize();
+      /* Alerts the results */
+      posting.done(function( data ) {
+        alert(data);
+      });
+    });
+    });
+  form(action='http://139.59.166.46/ajax/uploadimagefiles', method='get' id='upload-images')
+    input(type='checkbox' name='skipped' value='true')
+    input(type='hidden' name='id' value=itemid)
+    select(class='image-picker show-html' data-limit='4' multiple='multiple' name='files')
+      each val, index in object
+        option(data-img-src=val.url, id=index value=val.url) #{val.url}
+    button(type='submit') Submit
+
+
+
+
+
